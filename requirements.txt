@@ -1,0 +1,8 @@
+pandas
+requests
+matplotlib
+seaborn
+statsmodels
+openpyxl
+jupyter
+fpdf

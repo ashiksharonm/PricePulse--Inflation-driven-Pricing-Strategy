@@ -1,0 +1,61 @@
+name: PricePulse Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    # Run monthly on the 15th at 00:00 UTC (approx after BLS release)
+    - cron: '0 0 15 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run CI Tests (Lint/Verify)
+      if: github.event_name == 'push'
+      run: |
+        # Just check if scripts import correctly for now
+        python -c "import src.extract_bls; import src.transform; import src.train_forecast; print('Imports successful')"
+
+    - name: Run Full Pipeline (CD)
+      if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      run: |
+        echo "Starting Monthly Pipeline..."
+        
+        # 1. Fetch Data
+        python src/extract_bls.py
+        
+        # 2. Transform
+        python src/transform.py
+        
+        # 3. Forecast
+        python src/train_forecast.py
+        
+        # 4. Generate Deliverables
+        python src/create_roi_model.py
+        python src/create_deck.py
+        
+    - name: Commit and Push Changes
+      if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && success()
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Automated: Update data and deliverables [skip ci]"
+        file_pattern: 'data/ outputs/ deck/ excel_model/'
