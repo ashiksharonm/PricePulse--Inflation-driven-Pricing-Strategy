@@ -1,0 +1,9 @@
+category,seasonal_naive_mae,sarimax_mae,sarimax_vs_naive_pct
+Apparel,1.1182,1.1195,-0.1104
+Energy,2.5108,1.8603,25.9085
+Food,0.1717,0.1672,2.6591
+Gasoline,5.0116,3.4582,30.9972
+Headline CPI,0.2437,0.1919,21.255
+New Vehicles,0.1668,0.1386,16.8862
+Shelter,0.1338,0.1133,15.3545
+Used Cars and Trucks,1.192,0.6018,49.5113

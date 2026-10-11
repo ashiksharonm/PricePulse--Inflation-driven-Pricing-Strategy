@@ -33,7 +33,7 @@ jobs:
       if: github.event_name == 'push'
       run: |
         # Just check if scripts import correctly for now
-        python -c "import src.extract_bls; import src.transform; import src.train_forecast; print('Imports successful')"
+        python -c "import src.extract_bls; import src.transform; import src.train_forecast; import src.backtest; print('Imports successful')"
 
     - name: Run Full Pipeline (CD)
       if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
